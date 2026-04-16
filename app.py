@@ -11,6 +11,18 @@ app = Flask(__name__)
 
 # --- 1. تحميل الموديل ---
 MODEL_PATH = 'model.h5' 
+
+# Automatically reconstruct the model if it was split
+if not os.path.exists(MODEL_PATH):
+    print("Reassembling model from parts...")
+    with open(MODEL_PATH, "wb") as f_out:
+        for part in ["model_part1.h5", "model_part2.h5"]:
+            if os.path.exists(part):
+                with open(part, "rb") as f_in:
+                    f_out.write(f_in.read())
+            else:
+                print(f"Warning: Missing part {part}")
+
 print("Loading model...")
 try:
     # Use compile=False to save RAM on free tiers since we solely need inference
